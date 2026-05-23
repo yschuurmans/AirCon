@@ -10,7 +10,7 @@ services:
   hisense_ac:
     depends_on:
       - copy_config
-    image: yschuurmans/aircon:0.3.18
+    image: yschuurmans/aircon:0.3.19
     container_name: hisense_ac
     healthcheck:
       disable: true

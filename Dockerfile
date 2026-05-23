@@ -15,6 +15,6 @@ ENV CONFIG_DIR=/opt/hisense
 ENV OPTIONS_FILE=/data/options.json
 
 COPY run.sh /
-RUN chmod a+x /run.sh
+RUN sed -i 's/\r$//' /run.sh && chmod a+x /run.sh
 
 CMD [ "/run.sh" ]
