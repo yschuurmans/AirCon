@@ -182,7 +182,8 @@ class Device(object):
     command = self._build_command(name, data_value)
     # There are (usually) no acks on commands, so also queue an update to the
     # property, to be run once the command is sent.
-    property_updater = lambda: self.update_property(name, typed_value)
+    optimistic_value = data_value if precision != 1 else typed_value
+    property_updater = lambda: self.update_property(name, optimistic_value)
     # Add as a high priority command.
     self.commands_queue.put_nowait(Command(10, time.time_ns(), command, property_updater))
 
