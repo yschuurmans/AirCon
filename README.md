@@ -44,7 +44,7 @@ If using [HomeAssistant], this is the preferred method.
 
 1. In the HomeAssistant UI, enter **Supervisor → Add-on Store**.
 1. Click **⋮ menu → Repositories**.
-1. Add `https://github.com/deiger/AirCon` to the list.
+1. Add `https://github.com/yschuurmans/AirCon` to the list.
 1. Choose **HiSense Air Conditioner** and install it.
 1. Update the configuration as detailed within the add-on.
 1. Start the add-on. Do not forget to enable **Start on boot** and **Watchdog**.

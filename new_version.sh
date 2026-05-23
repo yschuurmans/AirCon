@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+IMAGE_NAME=yschuurmans/aircon
+
 git pull
 
 OLD_VERSION=`git describe --abbrev=0`
@@ -23,6 +25,6 @@ git tag -d $NEW_VERSION
 git tag -a $NEW_VERSION -m "$NEW_VERSION_MSG"
 docker buildx rm --all-inactive --force
 docker buildx create --name multiarch --driver docker-container --use || true
-docker buildx build --platform linux/arm/v7,linux/arm64,linux/amd64,linux/386 -t deiger/aircon:$NEW_VERSION --push .
+docker buildx build --platform linux/arm/v7,linux/arm64,linux/amd64,linux/386 -t $IMAGE_NAME:$NEW_VERSION --push .
 git push
 git push --tags
