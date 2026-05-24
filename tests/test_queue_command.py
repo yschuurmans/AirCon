@@ -1,7 +1,9 @@
 import unittest
 
 from aircon.aircon import FglDevice
-from aircon.properties import FglFanSpeed
+from aircon.mqtt_client import MqttClient
+from aircon.properties import FglFanSpeed, FglOperationMode
+from paho.mqtt.client import MQTTMessage
 
 
 def _device_config():
@@ -60,6 +62,31 @@ class QueueCommandTests(unittest.TestCase):
 
     self.assertEqual(FglFanSpeed.HIGH, self.device.get_property('fan_speed'))
     self.assertEqual(('00:11:22:33:44:55', 'fan_speed', FglFanSpeed.HIGH, False),
+                     self.notifications[-1])
+
+  def test_mqtt_fan_only_command_maps_to_fgl_fan_mode(self):
+    mqtt_client = MqttClient(
+        client_id='test-client',
+        mqtt_topics={
+            'sub': 'hisense_ac/{}/{}',
+            'pub': 'hisense_ac/{}/{}',
+        },
+        devices=[self.device])
+    message = MQTTMessage(mid=0)
+    message.topic = b'hisense_ac/00:11:22:33:44:55/operation_mode/command'
+    message.payload = b'fan_only'
+
+    mqtt_client.mqtt_on_message(None, None, message)
+
+    command_entry = self.device.commands_queue.get_nowait()
+    property_value = command_entry.command['properties'][0]['property']['value']
+
+    self.assertEqual(FglOperationMode.FAN.value, property_value)
+
+    command_entry.updater()
+
+    self.assertEqual(FglOperationMode.FAN, self.device.get_property('operation_mode'))
+    self.assertEqual(('00:11:22:33:44:55', 'operation_mode', FglOperationMode.FAN, False),
                      self.notifications[-1])
 
 

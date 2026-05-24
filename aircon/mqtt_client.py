@@ -7,6 +7,15 @@ from .aircon import Device
 from .properties import AcWorkMode, FglOperationMode
 
 
+WORK_MODE_PROPERTIES = {'t_work_mode', 'operation_mode'}
+
+
+def _normalize_command_payload(prop_name: str, payload: str) -> str:
+  if prop_name in WORK_MODE_PROPERTIES and payload == 'fan_only':
+    return 'FAN'
+  return payload
+
+
 class MqttClient(mqtt.Client):
 
   def __init__(self, client_id: str, mqtt_topics: dict, devices: [Device]):
@@ -39,10 +48,7 @@ class MqttClient(mqtt.Client):
       return self.mqtt_on_subscribe(message.payload)
     mac_address = message.topic.rsplit('/', 3)[1]
     prop_name = message.topic.rsplit('/', 3)[2]
-    payload = message.payload.decode('utf-8')
-    if prop_name == 't_work_mode':
-      if payload == 'fan_only':
-        payload = 'FAN'
+    payload = _normalize_command_payload(prop_name, message.payload.decode('utf-8'))
 
     for device in self._devices:
       if device.mac_address != mac_address:
